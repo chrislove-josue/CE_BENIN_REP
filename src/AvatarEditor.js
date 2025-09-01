@@ -24,7 +24,7 @@ const AvatarEditor = () => {
         setImageSize(100);
         setPos({
           x: flyerRect.width * (2 / 3),
-          y: flyerRect.height - 100 - 30,
+          y: flyerRect.height - 100 - 38,
         });
       }
     };
@@ -71,7 +71,7 @@ const AvatarEditor = () => {
   const handleExport = () => {
     html2canvas(flyerRef.current, { useCORS: true }).then((canvas) => {
       const link = document.createElement("a");
-      link.download = "rhapsody_wonder.png";
+      link.download = "rhapsody_of_realities_wonder_conference.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
     });
@@ -79,7 +79,7 @@ const AvatarEditor = () => {
 
   return (
     <div style={{ padding: "10px" }}>
-      <h1 style={{ color: "#2e004f", fontSize: "18px" }}>Conférence - Rhapsodie des Réalités</h1>
+      <h1 style={{ color: "#2e004f", fontSize: "18px" }}>Conférence de Merveilles  de Rhapsodie des Réalités</h1>
 
       <div
         ref={flyerRef}
@@ -133,12 +133,22 @@ const AvatarEditor = () => {
         )}
       </div>
 
-      <div style={{ marginTop: "20px" }}>
-        <input type="file" accept="image/*" onChange={handleUpload} />
-        <button onClick={handleExport} style={{ marginLeft: "10px" }}>
-          Exporter l'image
-        </button>
-      </div>
+    <div
+  style={{
+    marginTop: "20px", 
+    gap: "20px", 
+    flexWrap: "wrap", 
+      display: "flex",
+    justifyContent: "center",
+    alignItems: "center", 
+  }}
+>
+  <input type="file" accept="image/*" onChange={handleUpload} />
+  <button onClick={handleExport}>
+    Exporter l'avatar
+  </button>
+</div>
+
     </div>
   );
 };
