@@ -10,34 +10,42 @@ const AvatarEditor = () => {
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
   // ✅ Correction : pas de dépendance sur flyerRef.current
-  useEffect(() => {
-    const updateSize = () => {
-      if (!flyerRef.current) return;
-      const flyerRect = flyerRef.current.getBoundingClientRect();
+ useEffect(() => {
+  const updateSize = () => {
+    if (!flyerRef.current) return;
+    const flyerRect = flyerRef.current.getBoundingClientRect();
 
-      if (window.innerWidth >= 768) {
-        setImageSize(160);
-        setPos({
-          x: flyerRect.width * (2 / 3),
-          y: flyerRect.height - 130 - 88,
-        });
-      } else {
-        setImageSize(100);
-        setPos({
-          x: flyerRect.width * (2 / 3),
-          y: flyerRect.height - 100 - 38,
-        });
-      }
-    };
+    if (flyerRect.width === 0 || flyerRect.height === 0) {
+      console.log("Dimensions nulles, retry...");
+      setTimeout(updateSize, 100); // retry plus tard
+      return;
+    }
 
-    const timeout = setTimeout(updateSize, 100);
-    window.addEventListener("resize", updateSize);
+    if (window.innerWidth >= 768) {
+      setImageSize(160);
+      setPos({
+        x: flyerRect.width * (2 / 3),
+        y: flyerRect.height - 130 - 88,
+      });
+    } else {
+      setImageSize(100);
+      setPos({
+        x: flyerRect.width * (2 / 3),
+        y: flyerRect.height - 100 - 38,
+      });
+    }
 
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("resize", updateSize);
-    };
-  }, []);
+    console.log("Initial pos:", flyerRect.width, flyerRect.height);
+  };
+
+  const timeout = setTimeout(updateSize, 300); // attend plus longtemps
+  window.addEventListener("resize", updateSize);
+
+  return () => {
+    clearTimeout(timeout);
+    window.removeEventListener("resize", updateSize);
+  };
+}, []);
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
