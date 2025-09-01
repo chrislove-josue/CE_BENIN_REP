@@ -9,18 +9,19 @@ const AvatarEditor = () => {
   const [IMAGE_SIZE, setImageSize] = useState(130);
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
+  // ✅ Correction : pas de dépendance sur flyerRef.current
   useEffect(() => {
     const updateSize = () => {
       if (!flyerRef.current) return;
       const flyerRect = flyerRef.current.getBoundingClientRect();
 
-      if (window.innerWidth >= 768) { // desktop et plus grands écrans
+      if (window.innerWidth >= 768) {
         setImageSize(160);
         setPos({
-          x: flyerRect.width * (2 / 3), // début des 2/3 droite
-          y: flyerRect.height - 130 - 88, // bas avec marge
+          x: flyerRect.width * (2 / 3),
+          y: flyerRect.height - 130 - 88,
         });
-      } else { // mobile
+      } else {
         setImageSize(100);
         setPos({
           x: flyerRect.width * (2 / 3),
@@ -29,17 +30,23 @@ const AvatarEditor = () => {
       }
     };
 
-    // attendre que le flyer ait rendu
-    setTimeout(updateSize, 50);
+    const timeout = setTimeout(updateSize, 100);
     window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, [flyerRef.current]);
+
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener("resize", updateSize);
+    };
+  }, []);
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setUserImage(reader.result);
+      reader.onloadend = () => {
+        console.log("Image chargée :", reader.result); // ✅ debug
+        setUserImage(reader.result);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -69,7 +76,10 @@ const AvatarEditor = () => {
   const stopDrag = () => (dragging.current = false);
 
   const handleExport = () => {
-    html2canvas(flyerRef.current, { useCORS: true }).then((canvas) => {
+    html2canvas(flyerRef.current, {
+      useCORS: true,
+      allowTaint: true,
+    }).then((canvas) => {
       const link = document.createElement("a");
       link.download = "rhapsody_of_realities_wonder_conference.png";
       link.href = canvas.toDataURL("image/png");
@@ -79,7 +89,9 @@ const AvatarEditor = () => {
 
   return (
     <div style={{ padding: "10px" }}>
-      <h1 style={{ color: "#2e004f", fontSize: "18px" }}>Conférence de Merveilles  de Rhapsodie des Réalités</h1>
+      <h1 style={{ color: "#2e004f", fontSize: "18px" }}>
+        Conférence de Merveilles de Rhapsodie des Réalités
+      </h1>
 
       <div
         ref={flyerRef}
@@ -122,6 +134,7 @@ const AvatarEditor = () => {
               borderRadius: "50%",
               overflow: "hidden",
               cursor: "grab",
+              backgroundColor: "red", // ✅ TEMP pour debug
             }}
           >
             <img
@@ -133,22 +146,36 @@ const AvatarEditor = () => {
         )}
       </div>
 
-    <div
-  style={{
-    marginTop: "20px", 
-    gap: "20px", 
-    flexWrap: "wrap", 
-      display: "flex",
-    justifyContent: "center",
-    alignItems: "center", 
-  }}
->
-  <input type="file" accept="image/*" onChange={handleUpload} />
-  <button onClick={handleExport}>
-    Exporter l'avatar
-  </button>
-</div>
+      <div
+        style={{
+          marginTop: "20px",
+          gap: "20px",
+          flexWrap: "wrap",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <input type="file" accept="image/*" onChange={handleUpload} />
+        <button onClick={handleExport}>Exporter l'avatar</button>
+      </div>
 
+      {/* ✅ Aperçu temporaire pour debug */}
+      {userImage && (
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <p>Aperçu de l'image utilisateur :</p>
+          <img
+            src={userImage}
+            alt="Preview"
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
