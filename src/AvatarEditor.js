@@ -47,17 +47,29 @@ const AvatarEditor = () => {
   };
 }, []);
 
-  const handleUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log("Image chargée :", reader.result); // ✅ debug
-        setUserImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+const handleUpload = (e) => {
+   const file = e.target.files[0];
+  if (file) {
+    // Vérifier extension MIME
+    const validTypes = ["image/png", "image/jpeg"];
+    if (!validTypes.includes(file.type)) {
+      alert("⚠️ Seules les images PNG et JPG/JPEG sont autorisées.");
+      e.target.value = ""; // reset input
+      return;
     }
-  };
+    const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+
+    if (file.size > MAX_SIZE) {
+      alert("⚠️ L'image ne doit pas dépasser 5 Mo.");
+      e.target.value = ""; // reset le champ file
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => setUserImage(reader.result);
+    reader.readAsDataURL(file);
+  }
+};
 
   const startDrag = () => (dragging.current = true);
 
@@ -164,7 +176,11 @@ const AvatarEditor = () => {
           alignItems: "center",
         }}
       >
-        <input type="file" accept="image/*" onChange={handleUpload} />
+        <input 
+  type="file" 
+  accept="image/png, image/jpeg" 
+  onChange={handleUpload} 
+/>
         <button onClick={handleExport}>Exporter l'avatar</button>
       </div>
 

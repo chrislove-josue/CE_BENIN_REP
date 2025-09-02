@@ -15,8 +15,8 @@ const Footer = () => {
       }}
       
     >
-      &copy; {new Date().getFullYear()} Rhapsody of Realities Wonders Conference. Tous droits réservés.{" "}
-      {/*<a
+      &copy; {new Date().getFullYear()} Rhapsody of Realities Wonders Conference. Tous droits réservés. Powered by{" "}
+      <a
         href={`https://wa.me/22998123353?text=${message}`}
         target="_blank"
         rel="noopener noreferrer"
@@ -31,8 +31,7 @@ const Footer = () => {
       className="mx-4"
       >
        Chrislove Josué 
-      </a>*/}
-      
+      </a>
     </footer>
   );
 };
