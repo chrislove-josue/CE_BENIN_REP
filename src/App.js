@@ -1,15 +1,33 @@
 import React from "react";
-import AvatarEditor from "./AvatarEditor";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import AvatarEditor from "./components/AvatarEditor";
+import NotFound from "./pages/NotFound";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
 function App() {
   return (
-    <div className="App">
-      <h1 style={{ textAlign: "center" }}>Création d'avatar personnalisé</h1>
-      <AvatarEditor />
-         <Analytics />
+    <Router>
+      <div className="max-w-6xl mx-auto px-4">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/avatar" element={<AvatarEditor />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Analytics />
         <SpeedInsights />
-    </div>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

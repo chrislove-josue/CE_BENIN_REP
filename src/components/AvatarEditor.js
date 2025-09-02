@@ -1,50 +1,51 @@
 import React, { useRef, useState, useEffect } from "react";
 import html2canvas from "html2canvas";
-const DEFAULT_IMAGE = "/default-avatar.png"; 
-
 
 const AvatarEditor = () => {
-  //const [userImage, setUserImage] = useState(null);
+  const [userImage, setUserImage] = useState(null);
   const flyerRef = useRef();
   const dragging = useRef(false);
-  const [userImage, setUserImage] = useState(DEFAULT_IMAGE);
-  
+
   const [IMAGE_SIZE, setImageSize] = useState(130);
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    const updateSize = () => {
-      if (!flyerRef.current) return;
-      const flyerRect = flyerRef.current.getBoundingClientRect();
+  // ✅ Correction : pas de dépendance sur flyerRef.current
+ useEffect(() => {
+  const updateSize = () => {
+    if (!flyerRef.current) return;
+    const flyerRect = flyerRef.current.getBoundingClientRect();
 
-      if (flyerRect.width === 0 || flyerRect.height === 0) {
-        setTimeout(updateSize, 100);
-        return;
-      }
+    if (flyerRect.width === 0 || flyerRect.height === 0) {
+      console.log("Dimensions nulles, retry...");
+      setTimeout(updateSize, 100); // retry plus tard
+      return;
+    }
 
-      if (window.innerWidth >= 768) {
-        setImageSize(160);
-        setPos({
-          x: flyerRect.width * (2 / 3),
-          y: flyerRect.height - 130 - 88,
-        });
-      } else {
-        setImageSize(100);
-        setPos({
-          x: flyerRect.width * (2 / 3),
-          y: flyerRect.height - 100 - 25,
-        });
-      }
-    };
+    if (window.innerWidth >= 768) {
+      setImageSize(160);
+      setPos({
+        x: flyerRect.width * (2 / 3),
+        y: flyerRect.height - 130 - 88,
+      });
+    } else {
+      setImageSize(100);
+      setPos({
+        x: flyerRect.width * (2 / 3),
+        y: flyerRect.height - 100 - 38,
+      });
+    }
 
-    const timeout = setTimeout(updateSize, 300);
-    window.addEventListener("resize", updateSize);
+    console.log("Initial pos:", flyerRect.width, flyerRect.height);
+  };
 
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("resize", updateSize);
-    };
-  }, []);
+  const timeout = setTimeout(updateSize, 300); // attend plus longtemps
+  window.addEventListener("resize", updateSize);
+
+  return () => {
+    clearTimeout(timeout);
+    window.removeEventListener("resize", updateSize);
+  };
+}, []);
 
 const handleUpload = (e) => {
    const file = e.target.files[0];
@@ -70,8 +71,8 @@ const handleUpload = (e) => {
   }
 };
 
-
   const startDrag = () => (dragging.current = true);
+
   const moveImage = (clientX, clientY) => {
     if (!flyerRef.current) return;
     const flyerRect = flyerRef.current.getBoundingClientRect();
@@ -95,7 +96,10 @@ const handleUpload = (e) => {
   const stopDrag = () => (dragging.current = false);
 
   const handleExport = () => {
-    html2canvas(flyerRef.current, { useCORS: true, allowTaint: true }).then((canvas) => {
+    html2canvas(flyerRef.current, {
+      useCORS: true,
+      allowTaint: true,
+    }).then((canvas) => {
       const link = document.createElement("a");
       link.download = "rhapsody_of_realities_wonder_conference.png";
       link.href = canvas.toDataURL("image/png");
@@ -104,30 +108,75 @@ const handleUpload = (e) => {
   };
 
   return (
-    <div className="avatar-editor">
-      <h1>Conférence de Merveilles de Rhapsodie des Réalités</h1>
+    <div style={{ padding: "10px" }}>
+      <h1 style={{ color: "#2e004f", fontSize: "18px" }}>
+        Conférence de Merveilles de Rhapsodie des Réalités
+      </h1>
 
-      <div ref={flyerRef} className="flyer-container">
-        <img src="/flyer.png" alt="Flyer" className="flyer-img" />
+      <div
+        ref={flyerRef}
+        style={{
+          position: "relative",
+          display: "inline-block",
+          width: "100%",
+          maxWidth: "500px",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
+          borderRadius: "12px",
+          userSelect: "none",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src="/flyer.png"
+          alt="Flyer"
+          style={{
+            width: "100%",
+            height: "auto",
+            borderRadius: "12px",
+            pointerEvents: "none",
+          }}
+        />
 
         {userImage && (
-         <div
-  onMouseDown={startDrag}
-  onMouseMove={onDrag}
-  onMouseUp={stopDrag}
-  onTouchStart={startDrag}
-  onTouchMove={onTouchMove}
-  onTouchEnd={stopDrag}
-  className="user-image"
-  style={{ left: pos.x, top: pos.y, width: IMAGE_SIZE, height: IMAGE_SIZE }}
->
-  <img src={userImage} alt="Utilisateur" />
-</div>
+          <div
+            onMouseDown={startDrag}
+            onMouseMove={onDrag}
+            onMouseUp={stopDrag}
+            onTouchStart={startDrag}
+            onTouchMove={onTouchMove}
+            onTouchEnd={stopDrag}
+            style={{
+              position: "absolute",
+              left: pos.x,
+              top: pos.y,
+              width: `${IMAGE_SIZE}px`,
+              height: `${IMAGE_SIZE}px`,
+              borderRadius: "50%",
+              overflow: "hidden",
+              cursor: "grab",
+              backgroundColor: "red", // ✅ TEMP pour debug
+            }}
+          >
+            <img
+              src={userImage}
+              alt="Utilisateur"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
         )}
       </div>
 
-      <div className="controls">
-<input 
+      <div
+        style={{
+          marginTop: "20px",
+          gap: "20px",
+          flexWrap: "wrap",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <input 
   type="file" 
   accept="image/png, image/jpeg" 
   onChange={handleUpload} 
@@ -135,81 +184,22 @@ const handleUpload = (e) => {
         <button onClick={handleExport}>Exporter l'avatar</button>
       </div>
 
-      {/* {userImage && (
-        <div className="preview">
+      {/* ✅ Aperçu temporaire pour debug */}
+      {userImage && (
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
           <p>Aperçu de l'image utilisateur :</p>
-          <img src={userImage} alt="Preview" />
+          <img
+            src={userImage}
+            alt="Preview"
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
+          />
         </div>
-      )} */}
-
-      <style>
-        {`
-          .avatar-editor {
-            padding: 40px;
-            text-align: center;
-            max-width: 500px;
-            margin: auto;
-          }
-
-          .flyer-container {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            border-radius: 12px;
-            user-select: none;
-            overflow: hidden;
-          }
-
-          .flyer-img {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            pointer-events: none;
-          }
-
-          .user-image {
-            position: absolute;
-            border-radius: 50%;
-            overflow: hidden;
-            cursor: grab;
-            background-color: red; /* debug */
-          }
-
-          .user-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-
-          .controls {
-            margin-top: 20px;
-            gap: 20px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-          }
-
-          .preview {
-            margin-top: 20px;
-          }
-
-          .preview img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-          }
-
-          /* Mobile */
-          @media (max-width: 768px) {
-            .avatar-editor {
-              padding-left: 32px;  /* px-8 */
-              padding-right: 32px; /* px-8 */
-            }
-          }
-        `}
-      </style>
+      )}
     </div>
   );
 };
