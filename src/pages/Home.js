@@ -19,7 +19,7 @@ const Home = () => (
     <style>
       {`
         .home {
-          padding: 40px; /* desktop */
+          /* padding: 40px; */ /* desktop */
           text-align: center;
         }
 

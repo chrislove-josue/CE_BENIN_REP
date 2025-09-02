@@ -8,7 +8,7 @@ import Contact from "./pages/Contact";
 import AvatarEditor from "./components/AvatarEditor";
 import NotFound from "./pages/NotFound";
 import { Analytics } from "@vercel/analytics/react";
-
+import { SpeedInsights } from "@vercel/speed-insights/react"
 function App() {
   return (
     <Router>
@@ -24,6 +24,7 @@ function App() {
           </Routes>
         </main>
         <Analytics />
+        <SpeedInsights />
         <Footer />
       </div>
     </Router>

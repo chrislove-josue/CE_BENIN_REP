@@ -10,11 +10,11 @@ const About = () => (
 
     <style>
       {`
-        .about {
+        /*.about {
           padding: 40px;       /* desktop padding */
           max-width: 800px;    /* limite largeur */
           margin: auto;        /* centré */
-        }
+        }*/
 
         /* Mobile */
         @media (max-width: 768px) {
