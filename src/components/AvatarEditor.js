@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import html2canvas from "html2canvas";
+const DEFAULT_IMAGE = "/default-avatar.png"; 
+
 
 const AvatarEditor = () => {
-  const [userImage, setUserImage] = useState(null);
+  //const [userImage, setUserImage] = useState(null);
   const flyerRef = useRef();
   const dragging = useRef(false);
-
+  const [userImage, setUserImage] = useState(DEFAULT_IMAGE);
+  
   const [IMAGE_SIZE, setImageSize] = useState(130);
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
@@ -29,7 +32,7 @@ const AvatarEditor = () => {
         setImageSize(100);
         setPos({
           x: flyerRect.width * (2 / 3),
-          y: flyerRect.height - 100 - 38,
+          y: flyerRect.height - 100 - 25,
         });
       }
     };
@@ -43,14 +46,30 @@ const AvatarEditor = () => {
     };
   }, []);
 
-  const handleUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setUserImage(reader.result);
-      reader.readAsDataURL(file);
+const handleUpload = (e) => {
+   const file = e.target.files[0];
+  if (file) {
+    // Vérifier extension MIME
+    const validTypes = ["image/png", "image/jpeg"];
+    if (!validTypes.includes(file.type)) {
+      alert("⚠️ Seules les images PNG et JPG/JPEG sont autorisées.");
+      e.target.value = ""; // reset input
+      return;
     }
-  };
+    const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+
+    if (file.size > MAX_SIZE) {
+      alert("⚠️ L'image ne doit pas dépasser 5 Mo.");
+      e.target.value = ""; // reset le champ file
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => setUserImage(reader.result);
+    reader.readAsDataURL(file);
+  }
+};
+
 
   const startDrag = () => (dragging.current = true);
   const moveImage = (clientX, clientY) => {
@@ -92,32 +111,36 @@ const AvatarEditor = () => {
         <img src="/flyer.png" alt="Flyer" className="flyer-img" />
 
         {userImage && (
-          <div
-            onMouseDown={startDrag}
-            onMouseMove={onDrag}
-            onMouseUp={stopDrag}
-            onTouchStart={startDrag}
-            onTouchMove={onTouchMove}
-            onTouchEnd={stopDrag}
-            className="user-image"
-            style={{ left: pos.x, top: pos.y, width: IMAGE_SIZE, height: IMAGE_SIZE }}
-          >
-            <img src={userImage} alt="Utilisateur" />
-          </div>
+         <div
+  onMouseDown={startDrag}
+  onMouseMove={onDrag}
+  onMouseUp={stopDrag}
+  onTouchStart={startDrag}
+  onTouchMove={onTouchMove}
+  onTouchEnd={stopDrag}
+  className="user-image"
+  style={{ left: pos.x, top: pos.y, width: IMAGE_SIZE, height: IMAGE_SIZE }}
+>
+  <img src={userImage} alt="Utilisateur" />
+</div>
         )}
       </div>
 
       <div className="controls">
-        <input type="file" accept="image/*" onChange={handleUpload} />
+<input 
+  type="file" 
+  accept="image/png, image/jpeg" 
+  onChange={handleUpload} 
+/>
         <button onClick={handleExport}>Exporter l'avatar</button>
       </div>
 
-      {userImage && (
+      {/* {userImage && (
         <div className="preview">
           <p>Aperçu de l'image utilisateur :</p>
           <img src={userImage} alt="Preview" />
         </div>
-      )}
+      )} */}
 
       <style>
         {`
