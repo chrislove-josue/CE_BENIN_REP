@@ -55,7 +55,7 @@ const Header = () => {
       {/* Navigation */}
       <nav className={`nav ${menuOpen ? "open" : ""}`}>
         <Link to="/" className="nav-link"> {language === "fr" ? "Accueil" : "Home"} </Link>
-        <Link to="/about" className="nav-link"> {language === "fr" ? "À propos" : "About"} </Link>
+        {/* <Link to="/about" className="nav-link"> {language === "fr" ? "À propos" : "About"} </Link> */}
         <Link to="/avatar" className="nav-link"> {language === "fr" ? "Créer Avatar" : "Create Avatar"} </Link>
       </nav>
 
