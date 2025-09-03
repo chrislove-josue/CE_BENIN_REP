@@ -5,6 +5,12 @@ const Home = () => (
   <main className="home">
     <h1>Bienvenue à la Conférence de Merveilles</h1>
     <p>Vivez une expérience transformationnelle avec Rhapsodie des Réalités.</p>
+
+    <p>
+      La  Conference des Merveiles de la Rhapsodie des Réalités est un moment de célébration, d'enseignement et de transformation.
+      Rejoignez des milliers de participants autour du monde dans une atmosphère de foi et de miracles.
+    </p>
+
     <img
       src="/flyer.jpg"
       alt="Conférence"
@@ -31,7 +37,7 @@ const Home = () => (
         .button-container {
           margin-top: 20px;
         }
-
+          
         /* Mobile */
         @media (max-width: 768px) {
           .home {
