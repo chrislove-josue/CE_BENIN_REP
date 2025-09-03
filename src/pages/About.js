@@ -4,9 +4,9 @@ const About = () => (
   <main className="about">
     <h2>À propos de la Conférence</h2>
     <p>
-      La Rhapsody Wonders Conference est un moment de célébration, d'enseignement et de transformation.
+      La  Conference des Merveiles de le Rhapsodie des Réalités est un moment de célébration, d'enseignement et de transformation.
       Rejoignez des milliers de participants autour du monde dans une atmosphère de foi et de miracles.
-    </p>
+    </p> "
 
     <style>
       {`
