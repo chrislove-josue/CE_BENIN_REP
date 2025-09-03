@@ -181,7 +181,18 @@ const handleUpload = (e) => {
   accept="image/png, image/jpeg" 
   onChange={handleUpload} 
 />
-        <button onClick={handleExport}>Exporter l'avatar</button>
+       <button 
+  onClick={handleExport} 
+  disabled={!userImage} // ✅ Désactivé si pas d'image
+  style={{
+
+    cursor: userImage ? "pointer" : "not-allowed",
+  
+  }}
+>
+  Exporter l'avatar
+</button>
+
       </div>
 
       {/* ✅ Aperçu temporaire pour debug */}
